@@ -79,6 +79,20 @@ response = model.chat([Message(role=Role.USER, content="Hello, SCVP!")])
 print(response.content)
 ```
 
+### Local project model
+
+```python
+from scvp import Message, Role, SCVPModel
+
+model = SCVPModel(provider="local_project")
+response = model.chat([
+    Message(role=Role.USER, content="أريد جوابًا بسيطًا ومباشرًا")
+])
+print(response.content)
+```
+
+This provider is fully local and does not require any external API key or server.
+
 Or scaffold a starter project with the CLI:
 
 ```bash

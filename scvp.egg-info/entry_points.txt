@@ -1,0 +1,2 @@
+[console_scripts]
+scvp = scvp.cli.main:cli

@@ -19,7 +19,7 @@ from scvp import Message, Role, SCVPModel
 
 
 def main() -> None:
-    model = SCVPModel(provider="mock")
+    model = SCVPModel(provider="local_project")
 
     print("-- chat() --")
     response = model.chat(
@@ -31,14 +31,6 @@ def main() -> None:
     for chunk in model.stream([Message(role=Role.USER, content="Stream me a reply")]):
         print(chunk.delta, end="", flush=True)
     print()
-
-    print("\n-- embed() --")
-    vectors = model.embed(["order status", "refund policy"])
-    print(f"{len(vectors)} vectors, dim={len(vectors[0])}")
-
-    print("\n-- classify() --")
-    label = model.classify("Where is my package?", labels=["shipping", "billing", "returns"])
-    print(f"classified as: {label}")
 
 
 if __name__ == "__main__":

@@ -68,3 +68,20 @@ def test_capability_not_supported_raises_clear_error():
 
     assert "bare" in str(exc_info.value)
     assert "embed" in str(exc_info.value)
+
+
+def test_local_project_model_provider_can_be_registered():
+    model = SCVPModel(provider="local_project")
+    response = model.chat([Message(role=Role.USER, content="مرحبا من النموذج المحلي")])
+
+    assert response.provider == "local_project"
+    assert "مرحبا" in response.content
+    assert "local-project" in response.model
+
+
+def test_local_project_model_streams_response():
+    model = SCVPModel(provider="local_project")
+    chunks = list(model.stream([Message(role=Role.USER, content="stream locally")]))
+
+    assert chunks[-1].done is True
+    assert "stream locally" in "".join(chunk.delta for chunk in chunks)
