@@ -1,28 +1,66 @@
-# SCVP — Scalable Cognitive Virtual Platform
+# SCVP — Provider-Agnostic Agent Runtime
 
-SCVP is a provider-agnostic AI agent framework/SDK. It's infrastructure to
-build *on top of* — not a chatbot. Agents, tool-using assistants,
-Discord/Telegram/WhatsApp bots, research agents, RAG assistants,
-multi-agent systems, and AI-powered APIs are all meant to sit on the same
-SCVP core, swapping providers (model, search, memory, ...) without
-touching application code.
+SCVP is a small, provider-agnostic Python runtime for building AI agents.
+It provides one stable model interface, deterministic local providers,
+configurable agent execution, and injectable tools without locking an
+application to a vendor SDK.
 
-> **Status:** Phase 0 (Architecture) + Phase 1 (Core) + Phase 2 (Model
-> Interface) + the Phase 3 Agent Runtime MVP are done and covered by tests. Everything
-> under "Roadmap" below that isn't checked is designed but not yet built.
-> SCVP is built phase by phase — the next phase doesn't start until the
-> one before it is stable.
+> **Status:** The core, model interface, and sequential agent runtime are
+> implemented and covered by tests. Later roadmap items are intentionally
+> not part of this release.
 
-## Why is there no real model yet?
+## Model providers
 
-SCVP doesn't assume a real model provider exists — inventing one would be
-worse than not having one. So this phase ships with exactly one fully
-real, fully working provider: `MockModelProvider`. It's deterministic and
-has zero external dependencies, and it makes the whole model interface
-(`generate`, `chat`, `stream`, `embed`, `classify`, `reason`) runnable and
-testable today, with no API keys required. Swapping in a real provider
-later (OpenAI-compatible, Anthropic-compatible, Ollama, llama.cpp, ...)
-will never require changing code written against `SCVPModel`.
+The built-in `mock` provider is deterministic and requires no API key. It
+implements the complete model surface (`generate`, `chat`, `stream`,
+`embed`, `classify`, and `reason`) so applications and tests can run locally.
+Additional providers can register against the same `SCVPModel` interface.
+
+### Local Custom Model
+
+`CustomModelProvider` runs a model from disk without an API key or external
+service. Install the optional backend you need:
+
+```bash
+pip install -e ".[local-models]"       # Hugging Face Transformers + torch
+pip install -e ".[gguf]"               # GGUF through llama-cpp-python
+```
+
+Download a compatible model into a local directory (for example from a model
+repository using its normal download tools), then point the configuration at
+that directory. Transformers directories are loaded with
+`AutoTokenizer`/`AutoModelForCausalLM`; a `.gguf` path uses llama.cpp.
+
+Complete `scvp.config.yaml` example:
+
+```yaml
+models:
+  default: custom
+  providers:
+    custom:
+      type: custom
+      model_path: "./models/my-model"
+      device: "auto"
+      temperature: 0.7
+      max_tokens: 512
+      timeout: 120
+```
+
+Create a model from that configuration and use it with an Agent:
+
+```python
+from scvp import Agent, SCVPModel, load_config
+
+config = load_config("scvp.config.yaml")
+model = SCVPModel.from_config(config)
+agent = Agent(name="local-support", model=model)
+result = agent.run("Summarize this project.")
+print(result.content)
+```
+
+Loading is lazy: `transformers`, `torch`, or `llama-cpp-python` are imported
+only when the custom provider receives its first request. Tests can inject any
+lightweight object with a `generate()` method, so they never need a large model.
 
 ## Architecture
 
@@ -78,20 +116,6 @@ model = SCVPModel(provider="mock")
 response = model.chat([Message(role=Role.USER, content="Hello, SCVP!")])
 print(response.content)
 ```
-
-### Local project model
-
-```python
-from scvp import Message, Role, SCVPModel
-
-model = SCVPModel(provider="local_project")
-response = model.chat([
-    Message(role=Role.USER, content="أريد جوابًا بسيطًا ومباشرًا")
-])
-print(response.content)
-```
-
-This provider is fully local and does not require any external API key or server.
 
 Or scaffold a starter project with the CLI:
 

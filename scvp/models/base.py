@@ -78,6 +78,16 @@ class SCVPModel:
         self._provider_name = provider
         self._provider: ModelProvider = model_registry.get(provider, **provider_kwargs)
 
+    @classmethod
+    def from_config(cls, config: Any) -> "SCVPModel":
+        """Build a model from either the new ``models`` or legacy ``model`` schema."""
+        provider = config.get("models.default") or config.get("model.provider", "mock")
+        kwargs = dict(config.get(f"models.providers.{provider}", {}) or {})
+        if not isinstance(kwargs, dict):
+            raise TypeError(f"Configuration for model provider '{provider}' must be a mapping.")
+        kwargs.pop("type", None)
+        return cls(provider=provider, **kwargs)
+
     @property
     def provider_name(self) -> str:
         return self._provider_name

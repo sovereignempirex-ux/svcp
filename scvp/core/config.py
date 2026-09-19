@@ -34,6 +34,10 @@ _DEFAULTS: Dict[str, Any] = {
         "provider": "mock",
         "name": "scvp-mock-1",
     },
+    "models": {
+        "default": "mock",
+        "providers": {},
+    },
     "logging": {
         "level": "INFO",
         "json": True,

@@ -1,7 +1,7 @@
 [project]
 name = "scvp"
-version = "0.1.0a1"
-description = "SCVP — Scalable Cognitive Virtual Platform: a provider-agnostic AI agent framework/SDK"
+version = "0.1.0a2"
+description = "SCVP — a provider-agnostic Python runtime for AI agents"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
@@ -13,6 +13,13 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
+]
+local-models = [
+    "torch>=2.0",
+    "transformers>=4.35",
+]
+gguf = [
+    "llama-cpp-python>=0.2.0",
 ]
 
 [project.scripts]

@@ -27,6 +27,7 @@ scvp/core/types.py
 scvp/models/__init__.py
 scvp/models/base.py
 scvp/models/providers/__init__.py
+scvp/models/providers/local_project.py
 scvp/models/providers/mock.py
 scvp/models/providers/project_custom.py
 scvp/tools/__init__.py

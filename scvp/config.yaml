@@ -1,0 +1,11 @@
+# SCVP configuration example. Environment variables prefixed with SCVP_
+# can override these values; for example SCVP_MODEL__PROVIDER=mock.
+app:
+  name: scvp-app
+  env: development
+model:
+  provider: mock
+  name: scvp-mock-1
+logging:
+  level: INFO
+  json: true

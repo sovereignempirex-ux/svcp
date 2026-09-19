@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: scvp
-Version: 0.1.0a1
-Summary: SCVP — Scalable Cognitive Virtual Platform: a provider-agnostic AI agent framework/SDK
+Version: 0.1.0a2
+Summary: SCVP — a provider-agnostic Python runtime for AI agents
 License: MIT
 Requires-Python: >=3.9
 Description-Content-Type: text/markdown
@@ -12,31 +12,23 @@ Provides-Extra: dev
 Requires-Dist: pytest>=7.0; extra == "dev"
 Dynamic: license-file
 
-# SCVP — Scalable Cognitive Virtual Platform
+# SCVP — Provider-Agnostic Agent Runtime
 
-SCVP is a provider-agnostic AI agent framework/SDK. It's infrastructure to
-build *on top of* — not a chatbot. Agents, tool-using assistants,
-Discord/Telegram/WhatsApp bots, research agents, RAG assistants,
-multi-agent systems, and AI-powered APIs are all meant to sit on the same
-SCVP core, swapping providers (model, search, memory, ...) without
-touching application code.
+SCVP is a small, provider-agnostic Python runtime for building AI agents.
+It provides one stable model interface, deterministic local providers,
+configurable agent execution, and injectable tools without locking an
+application to a vendor SDK.
 
-> **Status:** Phase 0 (Architecture) + Phase 1 (Core) + Phase 2 (Model
-> Interface) + the Phase 3 Agent Runtime MVP are done and covered by tests. Everything
-> under "Roadmap" below that isn't checked is designed but not yet built.
-> SCVP is built phase by phase — the next phase doesn't start until the
-> one before it is stable.
+> **Status:** The core, model interface, and sequential agent runtime are
+> implemented and covered by tests. Later roadmap items are intentionally
+> not part of this release.
 
-## Why is there no real model yet?
+## Model providers
 
-SCVP doesn't assume a real model provider exists — inventing one would be
-worse than not having one. So this phase ships with exactly one fully
-real, fully working provider: `MockModelProvider`. It's deterministic and
-has zero external dependencies, and it makes the whole model interface
-(`generate`, `chat`, `stream`, `embed`, `classify`, `reason`) runnable and
-testable today, with no API keys required. Swapping in a real provider
-later (OpenAI-compatible, Anthropic-compatible, Ollama, llama.cpp, ...)
-will never require changing code written against `SCVPModel`.
+The built-in `mock` provider is deterministic and requires no API key. It
+implements the complete model surface (`generate`, `chat`, `stream`,
+`embed`, `classify`, and `reason`) so applications and tests can run locally.
+Additional providers can register against the same `SCVPModel` interface.
 
 ## Architecture
 
@@ -90,19 +82,6 @@ from scvp import Message, Role, SCVPModel
 
 model = SCVPModel(provider="mock")
 response = model.chat([Message(role=Role.USER, content="Hello, SCVP!")])
-print(response.content)
-```
-
-### Custom project model
-
-```python
-from scvp import Message, Role, SCVPModel
-from scvp.models.providers.project_custom import ProjectCustomModelProvider
-from scvp.models.base import model_registry
-
-model_registry.register("project_custom", ProjectCustomModelProvider, override=True)
-model = SCVPModel(provider="project_custom")
-response = model.chat([Message(role=Role.USER, content="Hello from my project")])
 print(response.content)
 ```
 
