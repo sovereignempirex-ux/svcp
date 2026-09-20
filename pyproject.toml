@@ -39,12 +39,12 @@ embeddings = [
 api = [
     "fastapi>=0.110",
     "uvicorn[standard]>=0.29",
-    "httpx2>=0.1",
+    "httpx>=0.27",
 ]
 api-security = [
     "fastapi>=0.110",
     "uvicorn[standard]>=0.29",
-    "httpx2>=0.1",
+    "httpx>=0.27",
     "sqlalchemy>=2.0",
     "psycopg[binary]>=3.2",
 ]
