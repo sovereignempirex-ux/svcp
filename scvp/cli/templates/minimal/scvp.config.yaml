@@ -1,0 +1,11 @@
+app:
+  name: my-scvp-app
+  env: development
+
+model:
+  provider: mock
+  name: scvp-mock-1
+
+logging:
+  level: INFO
+  json: true

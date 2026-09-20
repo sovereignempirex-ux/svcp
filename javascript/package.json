@@ -1,0 +1,26 @@
+{
+  "name": "@sovereignempirex/scvp",
+  "version": "0.1.0-alpha.1",
+  "description": "SCVP Phase 5 conversation memory for JavaScript",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": ["src", "README.md", "LICENSE"],
+  "scripts": {
+    "pack": "npm pack --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sovereignempirex-ux/svcp.git"
+  },
+  "homepage": "https://github.com/sovereignempirex-ux/svcp#readme",
+  "bugs": {
+    "url": "https://github.com/sovereignempirex-ux/svcp/issues"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
