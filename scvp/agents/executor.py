@@ -8,7 +8,7 @@ from typing import Mapping
 from scvp.agents.types import AgentContext, AgentTask
 from scvp.core.types import Message, Role
 from scvp.models.base import SCVPModel
-from scvp.tools import SCVPTool, ToolResult
+from scvp.tools import SCVPTool, ToolRegistry, ToolResult
 
 
 class AgentExecutor(ABC):
@@ -24,15 +24,11 @@ class DefaultAgentExecutor(AgentExecutor):
 
     def __init__(self, model: SCVPModel, tools: Mapping[str, SCVPTool]):
         self.model = model
-        self.tools = dict(tools)
+        self.tools = tools if isinstance(tools, ToolRegistry) else ToolRegistry(tools.values())
 
     def execute(self, task: AgentTask, context: AgentContext) -> ToolResult:
         if task.tool_name:
-            tool = self.tools.get(task.tool_name)
-            if tool is None:
-                raise KeyError("Unknown agent tool '{}'.".format(task.tool_name))
-            tool.validate(task.arguments)
-            return tool.execute(task.arguments)
+            return self.tools.invoke(task.tool_name, task.arguments)
 
         response = self.model.chat(
             list(context.state.messages)

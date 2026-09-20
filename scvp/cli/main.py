@@ -69,12 +69,15 @@ def agent_list() -> None:
 
 @cli.group()
 def tool() -> None:
-    """Manage tools. (Coming in Phase 4 — Tool System.)"""
+    """Manage registered agent tools."""
 
 
 @tool.command("list")
 def tool_list() -> None:
-    click.echo("No tools yet -- Tool System ships in Phase 4.")
+    from scvp.tools import tool_registry
+
+    names = tool_registry.list()
+    click.echo("\n".join(names) if names else "No tools registered.")
 
 
 @cli.group()

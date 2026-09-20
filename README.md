@@ -69,7 +69,7 @@ flowchart TB
     App[Your Application] --> SDK[SCVP SDK]
     SDK --> Core[SCVP Core]
     Core --> Runtime["Agent Runtime (phase 3)"]
-    Runtime --> MTS["Model / Tools / Search / Memory (phases 2, 4, 5, 6)"]
+    Runtime --> MTS["Model / Tools / Memory / Search (phases 2, 4, 5, 6)"]
     MTS --> Providers[(Providers / Adapters)]
     Core -.->|Registry pattern| Providers
 ```
@@ -139,6 +139,47 @@ The current Agent Runtime is intentionally sequential. It supports injected
 tools, custom planners, explicit step limits, and typed execution state.
 Multi-agent orchestration and parallel execution are later phases.
 
+### Tools
+
+Tools can be registered and invoked through `ToolRegistry`. `FunctionTool`
+adapts a regular Python callable, while tool schemas validate required fields
+and basic JSON types before execution. Registries also enforce declared
+permissions and optional timeouts.
+
+```python
+from scvp import FunctionTool, ToolRegistry
+
+tools = ToolRegistry([
+  FunctionTool(
+    "greet",
+    lambda arguments: "Hello, " + arguments["name"],
+    schema={
+      "required": ["name"],
+      "properties": {"name": {"type": "string"}},
+    },
+  )
+])
+result = tools.invoke("greet", {"name": "SCVP"})
+```
+
+### Memory
+
+Phase 5 provides a provider-agnostic conversation memory interface and a
+deterministic in-process backend:
+
+```python
+from scvp import Agent, InMemoryProvider, SCVPModel
+
+memory = InMemoryProvider()
+agent = Agent(model=SCVPModel("mock"), memory=memory)
+agent.run("Remember that my name is Sam.", conversation_id="support-1")
+history = memory.load("support-1")
+```
+
+Pass another `MemoryProvider` implementation to `Agent` to use a persistent
+backend. Memory is opt-in; agents without a memory provider retain their
+existing behavior.
+
 Run the full walkthrough (chat, stream, embed, classify):
 
 ```bash
@@ -175,8 +216,8 @@ pytest
 - [x] Phase 1 — Core (config, logging, exceptions, registry, types)
 - [x] Phase 2 — Model Interface (`ModelProvider`, `SCVPModel`, Mock provider) — *started*
 - [x] Phase 3 — Agent Runtime (sequential MVP)
-- [ ] Phase 4 — Tool System
-- [ ] Phase 5 — Memory
+- [x] Phase 4 — Tool System
+- [x] Phase 5 — Memory (provider interface and in-memory backend)
 - [ ] Phase 6 — Search
 - [ ] Phase 7 — RAG / Knowledge
 - [ ] Phase 8 — API

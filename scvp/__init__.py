@@ -3,7 +3,8 @@ from scvp.core.config import SCVPConfig, load_config
 from scvp.core.types import Message, ModelResponse, Role, StreamChunk, Usage
 from scvp.models import ModelProvider, SCVPModel, model_registry
 from scvp.agents import Agent, AgentResult, AgentRuntime, AgentStatus
-from scvp.tools import SCVPTool, ToolResult
+from scvp.tools import FunctionTool, SCVPTool, ToolRegistry, ToolResult, tool_registry
+from scvp.memory import MemoryProvider, InMemoryProvider, memory_registry
 
 __all__ = [
     "__version__",
@@ -22,5 +23,11 @@ __all__ = [
     "AgentRuntime",
     "AgentStatus",
     "SCVPTool",
+    "FunctionTool",
+    "ToolRegistry",
     "ToolResult",
+    "tool_registry",
+    "MemoryProvider",
+    "InMemoryProvider",
+    "memory_registry",
 ]
